@@ -1,4 +1,4 @@
-package ViewPage;
+package viewPage;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,11 +19,13 @@ import com.example.semiproject.R;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
-import Communication.SharedObject;
-import RecyclerViewAdapter.AirRecyclerAdapter;
-import model.SensorDateVO;
-import model.SystemInfoVO;
+import communication.SharedObject;
 import model.WeatherVO;
+
+import recyclerViewAdapter.AirRecyclerAdapter;
+
+import model.SensorDataVO;
+import model.SystemInfoVO;
 
 public class FragmentWindow extends Fragment {
 
@@ -34,14 +36,14 @@ public class FragmentWindow extends Fragment {
     AirRecyclerAdapter airRecyclerAdapter;
     private BufferedReader bufferedReader;
 
-    private SensorDateVO sensorDateVO;
+    private SensorDataVO sensorDataVO;
     private WeatherVO weatherVO;
     private ArrayList<SystemInfoVO> list;
 
-    public FragmentWindow(SharedObject sharedObject, BufferedReader bufferedReader, SensorDateVO sensorDateVO, WeatherVO weatherVO) {
+    public FragmentWindow(SharedObject sharedObject, BufferedReader bufferedReader, SensorDataVO sensorDataVO, WeatherVO weatherVO) {
         this.sharedObject = sharedObject;
         this.bufferedReader = bufferedReader;
-        this.sensorDateVO = sensorDateVO;
+        this.sensorDataVO = sensorDataVO;
         this.weatherVO = weatherVO;
     }
 
@@ -49,20 +51,19 @@ public class FragmentWindow extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_window,container,false);
         context=container.getContext();
         view = inflater.inflate(R.layout.fragment_air, container, false);
 
         Bundle bundle = getArguments();
-        list=(ArrayList<SystemInfoVO>)getArguments().get("list");
+        list=(ArrayList<SystemInfoVO>)getArguments().get("listFragmentWindow");
         weatherVO = (WeatherVO) getArguments().get("weather");
-        sensorDateVO = (SensorDateVO) getArguments().get("window");
+        sensorDataVO = (SensorDataVO) getArguments().get("sensorData");
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerViewAirVertical);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
                 context, LinearLayoutManager.VERTICAL, false);
         airRecyclerAdapter = new AirRecyclerAdapter(
-                context, sharedObject, bufferedReader, sensorDateVO, weatherVO, list);
+                context, sharedObject, bufferedReader, sensorDataVO, weatherVO, list);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(airRecyclerAdapter);
 

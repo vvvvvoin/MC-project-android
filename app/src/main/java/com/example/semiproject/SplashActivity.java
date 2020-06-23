@@ -1,7 +1,7 @@
 package com.example.semiproject;
 
+
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,20 +9,35 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+
 /**
  *  Output before app start
  */
 public class SplashActivity extends AppCompatActivity {
     String TAG="SplashActivity";
+    String[] REQUESTPERMISSION = {android.Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 일단 로그아웃
+        FirebaseAuth.getInstance().signOut();
+        // google 로그아웃
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
+        googleSignInClient.signOut();
 
         //보안 설정
         //1. 보안처리 (AndroidManifest.xml파일에 기본 보안에 대한 설정)
@@ -46,7 +61,7 @@ public class SplashActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Log.v(TAG,"dialog_onClick==YES");
-                            requestPermissions(new String[]{android.Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO},100);
+                            requestPermissions(REQUESTPERMISSION,100);
                         }
                     });
                     dialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -58,19 +73,26 @@ public class SplashActivity extends AppCompatActivity {
                     dialog.create().show();
                 }else {
                     //false => 한번도 물어본적 없는경우
-                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO,android.Manifest.permission.CAMERA},100);
+                    requestPermissions(REQUESTPERMISSION,100);
                     //여러개의 권한을 물어볼수 있기 때문에 String[] 배열에 넣어줌 한뻐너에 다 처리할 수 있음
                 }
             }else {
                 //권한 있을 경우
                 Log.v(TAG,"Check=="+permissionResult+" /보안설정 통과");
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+//                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
                 finish();
             }
         }else {
             //1.1.2 Version M 미만
             Log.v(TAG,"Version Check=="+Build.VERSION.SDK_INT+" /보안설정 통과");
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            //startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+//            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
             finish();
         }
     }
@@ -79,13 +101,24 @@ public class SplashActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Log.v(TAG,"onRequestPermissionsResult() _ requestCode=="+requestCode);
         //사용자가 권한을 설정하게 되면 이 Method가 마지막으로 호출 됨.
-        if(requestCode == 100){
-            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if(requestCode == 100 && grantResults.length == REQUESTPERMISSION.length){
                 //사용자가 권한 허용을 눌렀을 경우
                 Log.v(TAG,"onRequestPermissionsResult()_보안 통과_grantResults[0]=="+grantResults[0]);
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                finish();
+                //startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+
+                boolean check = true;
+                for(int result : grantResults){
+                    if( result != PackageManager.PERMISSION_GRANTED){
+                        check = false;
+                        break;
+                    }
+                }
+
+                if(check) {
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finish();
+                }
             }
-        }
+
     }
 }

@@ -162,7 +162,57 @@ ViewPagerActivity에서는 어댑터에 add하기 전에, 미리 프래그먼트
 
 ## [RecyclerView](https://github.com/hyunho058/AndroidTIL/blob/master/RecyclerVIew.md)
 
+### Item Select Event
+
+```java
+///RecyclerView Item Background Change///
+if (selectedPosition == position && selectedPosition != 0)
+    holder.itemView.setBackgroundResource(R.drawable.round_border_select);
+else
+    holder.itemView.setBackgroundResource(R.drawable.round_border);
+
+/**
+         * //RecyclerView Touch Event (ItemVIew Click시 해당 Item에 Logic처리 가능)//
+         */
+holder.itemView.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        Log.v(TAG,"onBindViewHolder()_onClick()_position=="+position);
+        switch (position){
+            case  0:
+                break;
+            case 1:
+                sharedObject.put("/ANDROID>/MODE SMART");
+                oldPosition = selectedPosition;
+                selectedPosition = position;
+
+                notifyItemChanged(oldPosition);
+                notifyItemChanged(selectedPosition);
+                break;
+            case 2:
+                oldPosition = selectedPosition;
+                selectedPosition = position;
+
+                notifyItemChanged(oldPosition);
+                notifyItemChanged(selectedPosition);
+                break;
+            case 3:
+                oldPosition = selectedPosition;
+                selectedPosition = position;
+
+                notifyItemChanged(oldPosition);
+                notifyItemChanged(selectedPosition);
+                break;
+        }
+    }
+});
+```
+
 ### Reference
+
+[ItemClickChangeEvent](https://marlboroyw.tistory.com/522)
+
+
 
 ## QR code
 
@@ -539,7 +589,40 @@ swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
 
 
+## TestVIew 글자 Event
 
+* XML 에 아래 3개를 추가
+  * android:ellipsize="marquee"
+  * android:marqueeRepeatLimit="marquee_forever"
+  * android:singleLine="true"
+
+  ```xml
+  <TextView
+  	android:id="@+id/tvModeSituation"
+  	android:layout_width="0dp"
+  	android:layout_height="match_parent"
+  	android:layout_margin="10dp"
+  	android:layout_weight="10"
+  	android:ellipsize="marquee"
+  	android:marqueeRepeatLimit="marquee_forever"
+  	android:singleLine="true"
+  	android:text="0"
+  	android:textSize="28sp"
+  	android:textColor="@color/recyclerViewItemFontValue"/>
+  ```
+
+* Java Class code 추가
+
+  * TestView.setSelected(true);
+
+  ```java
+  ((SystemInfoWeather) holder).tvModeSituation.setText(sensorDataVO.getMode());     	
+  ((SystemInfoWeather) holder).tvModeSituation.setSelected(true);
+  ```
+
+  
+
+### [Reeference](https://itpangpang.xyz/198)
 
 ## Err
 
